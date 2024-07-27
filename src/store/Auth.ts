@@ -36,3 +36,56 @@ interface IAuthStore {
 }
 
 
+export const useAuthStore = create<IAuthStore>()(
+    persist(
+        immer((set) => ({
+            session: null,
+            jwt: null,
+            user: null,
+            hydrated: false,
+
+
+            setHydrated(){
+                set({hydrated: true})
+            },
+
+            async verifySession(){
+                try {
+                    const session = await account.getSession("current");
+                    set({session: session});  
+                } catch (error) {
+                    console.error(error);
+                }
+
+            },
+
+            async login(email, password){
+                try {
+                    const session = await account.createEmailPasswordSession(email, password);
+                    const[user, {jwt}] = await Promise.all([
+                        account.get<IUserPrefs>(),
+                        account.createJWT()
+                    ])
+                } catch (error) {
+                    console.error(error)
+                }
+            },
+
+            async createAccount(){
+
+            },
+
+            async logout(){
+
+            }
+        })),
+        {
+            name: "auth",
+            onRehydrateStorage(){
+                return(state, error) => {
+                    if(!error) state?.setHydrated()
+                }
+              }
+        }
+    )
+)
