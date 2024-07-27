@@ -15,8 +15,8 @@ export async function createCommentCollection(){
 
     //creating answer attributes
     await Promise.all([
-        // databases.createEnumAttribute(db, commentCollection, )
-        databases.createStringAttribute(db, commentCollection, "content", 1000, true),
+        databases.createStringAttribute(db, commentCollection, "content", 10000, true),
+        databases.createEnumAttribute(db, commentCollection, "type", ["answer", "question"], true ),
         databases.createStringAttribute(db, commentCollection, "typeId", 50, true),
         databases.createStringAttribute(db, commentCollection, "authorId", 50, true)
     ])
