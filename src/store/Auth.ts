@@ -17,16 +17,21 @@ interface IAuthStore {
     hydrated: boolean;
 
     setHydrated(): void;
+    
     verifySession(): Promise<void>;
+    
     login(
         email: string,
         password: string
     ): Promise<{ success: boolean; error?: AppwriteException | null }>;
+   
     createAccount(
         name: string,
         email: string,
         password: string
     ): Promise<{ success: boolean, error?: AppwriteException | null }>;
+   
+    logout(): Promise<void>
 
 }
 
