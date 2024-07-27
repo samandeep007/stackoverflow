@@ -8,7 +8,6 @@ import { databases } from './config';
 
 export default async function getOrCreateDB() {
     try {
-        
         await databases.get(db);
         console.log("Database connected");
 
