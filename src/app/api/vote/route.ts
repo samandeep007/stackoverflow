@@ -1,7 +1,8 @@
-import { db, voteCollection } from '@/models/name';
-import { databases } from '@/models/server/config';
+import { answerCollection, db, questionCollection, voteCollection } from '@/models/name';
+import { databases, users } from '@/models/server/config';
 import {NextRequest, NextResponse} from 'next/server';
 import { Query } from 'node-appwrite';
+import { IUserPrefs } from '@/store/Auth';
 
 
 export const POST = async(request: NextRequest) => {
@@ -24,7 +25,17 @@ export const POST = async(request: NextRequest) => {
 
         //
         if(response.documents.length > 0){
-            //
+            await databases.deleteDocument(db, voteCollection, response.documents[0].$id);
+
+            //decrease the reputation
+            // const prefs = await users.getPrefs<IUserPrefs>(votedById);
+            // await users.updatePrefs<IUserPrefs>(votedById, {
+            //     reputation: prefs.reputation - 1
+            // })
+            const questionOrAnswer = await databases.getDocument(db, type==="question"?questionCollection:answerCollection, typeId, [
+                
+            ])
+
         } 
 
         // that means previous vote doesn't exist or vote status changed
