@@ -34,8 +34,6 @@ export const POST = async (request: NextRequest) => {
                 reputation: response.documents[0].voteStatus === "upvoted" ? Number(prefs.reputation) - 1 : Number(prefs.reputation) + 1
             })
 
-            //TODO: come back here
-
         }
 
         // that means previous vote doesn't exist or vote status changed
@@ -48,17 +46,20 @@ export const POST = async (request: NextRequest) => {
                 voteStatus: voteStatus
             })
 
-            //Increase/Decrease the reputation
+           const questionOrAnswer = await databases.getDocument(db, type === "question" ? questionCollection : answerCollection, typeId);
+           const prefs = await users.getPrefs<IUserPrefs>(questionOrAnswer.authorId);
 
-            //
-            // const questionOrAnswer = await databases.getDocument(db, type === "question" ? questionCollection : answerCollection, typeId);
-            // const prefs = await users.getPrefs<IUserPrefs>(questionOrAnswer.authorId);
-            
-
-            
-            // await users.updatePrefs<IUserPrefs>(questionOrAnswer.authorId, {
-            //     reputation: voteStatus === "upvoted" ? Number(prefs.reputation) + 1 : Number(prefs.reputation) - 1
-            // })
+           // if vote was present
+           if(response.documents[0]){
+            await users.updatePrefs(questionOrAnswer.authorId, {
+                reputation: voteStatus === "upvoted" ? Number(prefs.reputation) - 1 : Number(prefs.reputation) + 1
+            })
+           }
+           else {
+            await users.updatePrefs(questionOrAnswer.authorId, {
+                repuation: voteStatus === "upvoted" ? Number(prefs.reputation) + 1 : Number(prefs.reputation) - 1
+            })
+           }
         }
 
         const [upvotes, downvotes] = await Promise.all([
