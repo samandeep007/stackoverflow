@@ -9,16 +9,21 @@ export default async function getOrCreateStorage(){
     
    } catch (error) {
 
-    await storage.createBucket(questionAttachmentBucket, questionAttachmentBucket, [
-        Permission.create('users'),
-        Permission.read('any'),
-        Permission.read('users'),
-        Permission.update('users'),
-        Permission.delete('users')
-    ], false, undefined, undefined, ["jpg", "jpeg", "png", "heic", "gif", "webp"]);
-    
-    console.log("Question attachment bucket created successfully");
-    
+   try {
+     await storage.createBucket(questionAttachmentBucket, questionAttachmentBucket, [
+         Permission.create('users'),
+         Permission.read('any'),
+         Permission.read('users'),
+         Permission.update('users'),
+         Permission.delete('users')
+     ], false, undefined, undefined, ["jpg", "jpeg", "png", "heic", "gif", "webp"]);
+     
+     console.log("Question attachment bucket created successfully");
+
+   } catch (error) {
+    console.error("Error creating question attachment bucket", error);
+   }
+
    }
 
     
