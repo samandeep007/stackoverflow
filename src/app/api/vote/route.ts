@@ -1,7 +1,7 @@
 import { answerCollection, db, questionCollection, voteCollection } from '@/models/name';
 import { databases, users } from '@/models/server/config';
 import { NextRequest, NextResponse } from 'next/server';
-import { Query } from 'node-appwrite';
+import { ID, Query } from 'node-appwrite';
 import { IUserPrefs } from '@/store/Auth';
 
 
@@ -34,12 +34,19 @@ export const POST = async (request: NextRequest) => {
                 reputation: response.documents[0].voteStatus === "upvoted"?Number(prefs.reputation) + 1: Number(prefs.reputation) - 1
             })
 
+            //TODO: come back here
+
         }
 
         // that means previous vote doesn't exist or vote status changed
         if (response.documents[0].voteStatus !== voteStatus) {
-
-
+            // 
+            const doc  = await databases.createDocument(db, voteCollection, ID.unique(), {
+                type: type,
+                typeId: typeId,
+                votedById: votedById,
+                voteStatus: voteStatus
+            })
         }
 
         const [upvotes, downvotes] = await Promise.all([
