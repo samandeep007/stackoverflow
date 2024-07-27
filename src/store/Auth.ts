@@ -97,7 +97,12 @@ export const useAuthStore = create<IAuthStore>()(
             },
 
             async logout(){
-
+                try {
+                    await account.deleteSessions();
+                    set({session: null, jwt: null, user: null});
+                } catch (error) {
+                    console.error(error);
+                }
             }
         })),
         {
