@@ -1,45 +1,44 @@
 import { answerCollection, db, questionCollection, voteCollection } from '@/models/name';
 import { databases, users } from '@/models/server/config';
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Query } from 'node-appwrite';
 import { IUserPrefs } from '@/store/Auth';
 
 
-export const POST = async(request: NextRequest) => {
+export const POST = async (request: NextRequest) => {
     try {
         // Grab the data
-        const {votedById, voteStatus, typeId, type} = await request.json();
-        
+        const { votedById, voteStatus, typeId, type } = await request.json();
+
         //validate the fields
-        if(!votedById || !voteStatus || !typeId || !type){
-            return NextResponse.json({success: false, message: "All fields are required"}, {status: 400});
+        if (!votedById || !voteStatus || !typeId || !type) {
+            return NextResponse.json({ success: false, message: "All fields are required" }, { status: 400 });
         }
 
         // List document
         const response = await databases.listDocuments(db, voteCollection, [
-            Query.equal("type", type), 
+            Query.equal("type", type),
             Query.equal("typeId", typeId),
             Query.equal("votedById", votedById)
         ]);
 
 
         //
-        if(response.documents.length > 0){
+        if (response.documents.length > 0) {
             await databases.deleteDocument(db, voteCollection, response.documents[0].$id);
 
             //decrease the reputation
-            // const prefs = await users.getPrefs<IUserPrefs>(votedById);
-            // await users.updatePrefs<IUserPrefs>(votedById, {
-            //     reputation: prefs.reputation - 1
-            // })
-            const questionOrAnswer = await databases.getDocument(db, type==="question"?questionCollection:answerCollection, typeId, [
-                
-            ])
+            const questionOrAnswer = await databases.getDocument(db, type === "question" ? questionCollection : answerCollection, typeId);
+            const prefs = await users.getPrefs<IUserPrefs>(questionOrAnswer.authorId);
+            await users.updatePrefs<IUserPrefs>(questionOrAnswer.authorId, {
+                reputation: response.documents[0].voteStatus === "upvoted"?Number(prefs.reputation) + 1: Number(prefs.reputation) - 1
+            })
 
-        } 
+        }
 
         // that means previous vote doesn't exist or vote status changed
-        if(response.documents[0].voteStatus !== voteStatus){
+        if (response.documents[0].voteStatus !== voteStatus) {
+
 
         }
 
@@ -67,7 +66,7 @@ export const POST = async(request: NextRequest) => {
                 voteResult: upvotes.total = downvotes.total
             },
             message: "vote handled"
-        }, {status: 200})
+        }, { status: 200 })
 
 
     } catch (error: any) {
