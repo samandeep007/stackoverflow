@@ -8,15 +8,18 @@ export default async function getOrCreateStorage(){
     console.log("Storage Bucket connected");
     
    } catch (error) {
+
     await storage.createBucket(questionAttachmentBucket, questionAttachmentBucket, [
         Permission.create('users'),
         Permission.read('any'),
         Permission.read('users'),
         Permission.update('users'),
         Permission.delete('users')
-    ])
+    ], false, undefined, undefined, ["jpg", "jpeg", "png", "heic", "gif", "webp"]);
+    
+    console.log("Question attachment bucket created successfully");
     
    }
 
-    console.log("Question attachment bucket created successfully");
+    
 }
