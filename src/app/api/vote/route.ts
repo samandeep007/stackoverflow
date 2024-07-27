@@ -57,7 +57,7 @@ export const POST = async (request: NextRequest) => {
            }
            else {
             await users.updatePrefs(questionOrAnswer.authorId, {
-                repuation: voteStatus === "upvoted" ? Number(prefs.reputation) + 1 : Number(prefs.reputation) - 1
+                reputation: voteStatus === "upvoted" ? Number(prefs.reputation) + 1 : Number(prefs.reputation) - 1
             })
            }
         }
