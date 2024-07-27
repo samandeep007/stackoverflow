@@ -31,7 +31,7 @@ export const POST = async (request: NextRequest) => {
             const questionOrAnswer = await databases.getDocument(db, type === "question" ? questionCollection : answerCollection, typeId);
             const prefs = await users.getPrefs<IUserPrefs>(questionOrAnswer.authorId);
             await users.updatePrefs<IUserPrefs>(questionOrAnswer.authorId, {
-                reputation: response.documents[0].voteStatus === "upvoted" ? Number(prefs.reputation) + 1 : Number(prefs.reputation) - 1
+                reputation: response.documents[0].voteStatus === "upvoted" ? Number(prefs.reputation) - 1 : Number(prefs.reputation) + 1
             })
 
             //TODO: come back here
@@ -49,11 +49,16 @@ export const POST = async (request: NextRequest) => {
             })
 
             //Increase/Decrease the reputation
-            const questionOrAnswer = await databases.getDocument(db, type === "question" ? questionCollection : answerCollection, typeId);
-            const prefs = await users.getPrefs<IUserPrefs>(questionOrAnswer.authorId);
-            await users.updatePrefs<IUserPrefs>(questionOrAnswer.authorId, {
-                reputation: voteStatus === "upvoted" ? Number(prefs.reputation) + 1 : Number(prefs.reputation) - 1
-            })
+
+            //
+            // const questionOrAnswer = await databases.getDocument(db, type === "question" ? questionCollection : answerCollection, typeId);
+            // const prefs = await users.getPrefs<IUserPrefs>(questionOrAnswer.authorId);
+            
+
+            
+            // await users.updatePrefs<IUserPrefs>(questionOrAnswer.authorId, {
+            //     reputation: voteStatus === "upvoted" ? Number(prefs.reputation) + 1 : Number(prefs.reputation) - 1
+            // })
         }
 
         const [upvotes, downvotes] = await Promise.all([
